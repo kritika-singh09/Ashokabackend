@@ -77,8 +77,6 @@ const io = new Server(server, {
         "http://localhost:5174",
         "http://localhost:3000",
         "https://ashokacrm.vercel.app",
-        "https://zomato-frontend-mocha.vercel.app",
-        "https://ashoka-api.shineinfosolutions.in",
         "https://ashokacrm-t5bq.vercel.app",
         "https://ashoka-frontend.shineinfosolutions.in",
       ];
