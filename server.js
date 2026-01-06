@@ -94,7 +94,7 @@ const io = new Server(server, {
   pingTimeout: 60000,
   pingInterval: 25000
 });
-
+//krriti
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('🔗 User connected:', socket.id);
