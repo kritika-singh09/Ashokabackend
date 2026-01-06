@@ -198,8 +198,13 @@ let isConnected = false;
 // Middleware to ensure DB connection before each request
 app.use(async (req, res, next) => {
   try {
-    if (!isConnected) {
-      return res.status(500).json({ error: "Database not connected" });
+    if (!isConnected || mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 30000,
+        socketTimeoutMS: 45000,
+      });
+      isConnected = true;
+      console.log("MongoDB connected successfully");
     }
     
     // Initialize cloud sync router after DB connection
