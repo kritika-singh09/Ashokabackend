@@ -181,27 +181,37 @@ app.use("/api", restrictPantryAccess);
 // Database connection
 let isConnected = false;
 
+// Connect to MongoDB immediately
+(async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+    });
+    isConnected = true;
+    console.log("MongoDB connected successfully");
+  } catch (error) {
+    console.error("Database connection failed:", error);
+  }
+})();
+
 // Middleware to ensure DB connection before each request
 app.use(async (req, res, next) => {
   try {
     if (!isConnected) {
-      await mongoose.connect(process.env.MONGO_URI, {
-        serverSelectionTimeoutMS: 30000,
-        socketTimeoutMS: 45000,
-      });
-      isConnected = true;
-      console.log("MongoDB connected successfully");
-      
-      // Initialize cloud sync router after DB connection
-      if (!app.locals.syncRouterInitialized) {
-        app.use("/sync", cloudSyncRouter(mongoose.connection.db));
-        app.locals.syncRouterInitialized = true;
-      }
+      return res.status(500).json({ error: "Database not connected" });
     }
+    
+    // Initialize cloud sync router after DB connection
+    if (!app.locals.syncRouterInitialized && mongoose.connection.db) {
+      app.use("/sync", cloudSyncRouter(mongoose.connection.db));
+      app.locals.syncRouterInitialized = true;
+    }
+    
     next();
   } catch (error) {
-    console.error("Database connection failed:", error);
-    res.status(500).json({ error: "Database connection failed" });
+    console.error("Database middleware error:", error);
+    res.status(500).json({ error: "Database error" });
   }
 });
 
