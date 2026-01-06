@@ -66,7 +66,7 @@ const itemCategoryRoutes = require("./src/routes/itemCategoryRoutes.js");
 
 const path = require("path");
 
-// Initialize express app
+// Initialize express 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
